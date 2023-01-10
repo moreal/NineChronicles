@@ -1,0 +1,25 @@
+on:
+  push:
+    branches: [main, development]
+    tags: ["*"]
+
+name: Deploy GitHub Pages
+
+jobs:
+  deploy-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Aggregate icons
+        run: |
+          mkdir -p dist/icons
+          for icon in `find . -type f -regex '.*\/[0-9]*\.png$'`; do
+            cp $icon dist/icons;
+          done
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: "dist"
+          destination_dir: ${{ env.GITHUB_REF_NAME }}
